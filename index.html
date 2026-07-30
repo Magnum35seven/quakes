@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TerraPulse - Global Hazard Tracker</title>
+
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#121212" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+
+  <!-- External Leaflet CSS & Cluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <!-- Embedded CSS Styles (Guarantees styling loads without external CSS file dependency) -->
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #121212;
+      overflow: hidden;
+    }
+
+    /* Base Map Canvas */
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background: #121212;
+    }
+
+    /* Floating Top Navigation Bar */
+    .app-header {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 9999 !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e1e1e;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid #333333;
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #ffffff;
+    }
+
+    .view-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .view-controls button {
+      background: #2a2a2a;
+      border: 1px solid #444444;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .view-controls button.active, 
+    .view-controls button:hover {
+      background: #ff5252;
+      border-color: #ff5252;
+      color: #ffffff;
+    }
+
+    /* Floating Bottom Control Panel */
+    .layer-panel {
+      position: fixed;
+      bottom: 30px;
+      left: 12px;
+      z-index: 9999 !important;
+      background: #1e1e1e;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #333333;
+      color: #ffffff;
+      min-width: 230px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .layer-panel h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888888;
+      margin-bottom: 10px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .toggle-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .toggle-row input {
+      accent-color: #ff5252;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* Remove square background box from custom Leaflet SVG markers */
+    .custom-svg-marker {
+      background: none !important;
+      border: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Map Canvas Container -->
+  <div id="map"></div>
+
+  <!-- Header Navigation Controls Overlay -->
+  <header class="app-header">
+    <div class="logo">🌐 TerraPulse</div>
+    <div class="view-controls">
+      <button id="btn-global" class="active">🌍 Global</button>
+      <button id="btn-local">📍 Near Me</button>
+    </div>
+  </header>
+
+  <!-- Layer Selection Panel Overlay -->
+  <div class="layer-panel">
+    <h3>Active Hazard Layers</h3>
+    <label class="toggle-row">
+      <span>🔴 Earthquakes (M4.5+)</span>
+      <input type="checkbox" id="toggle-quakes" checked />
+    </label>
+    <label class="toggle-row">
+      <span>🌋 Active Volcanoes</span>
+      <input type="checkbox" id="toggle-volcanoes" checked />
+    </label>
+    <label class="toggle-row">
+      <span>🔥 Wildfires (NASA EONET)</span>
+      <input type="checkbox" id="toggle-fires" checked />
+    </label>
+  </div>
+
+  <!-- Leaflet & Clustering Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.js"></script>
+
+  <!-- Application Engine Script -->
+  <script src="app.js"></script>
+</body>
+</html>
